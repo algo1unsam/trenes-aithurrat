@@ -1,0 +1,107 @@
+import Deposito.*
+import Formaciones.*
+import Vagones.*
+import Locomotoras.*
+
+describe "objetos" {
+
+	var depositoUno = new Deposito()
+	var sanMartin = new Formacion()
+	var sarmiento = new Formacion()
+	var locomotoraUno = new Locomotora()
+	var vagonUno = new Pasajero()
+	var vagonDos = new Pasajero()
+	var vagonTres = new Pasajero()
+	var vagonCuatro = new Carga()
+
+	test"la cantidad de pasajeros por vagon" {
+		vagonUno.ancho(5)
+		vagonUno.largo(5)
+		vagonDos.ancho(10)
+		vagonDos.largo(10)
+		vagonTres.ancho(20)
+		vagonTres.largo(20)
+		sanMartin.agregarVagon(vagonUno)
+		sanMartin.agregarVagon(vagonDos)
+		sanMartin.agregarVagon(vagonTres)
+		assert.equals(50, vagonUno.cantidadDePasajeros())
+		assert.equals(100, vagonDos.cantidadDePasajeros())
+		assert.equals(200, vagonTres.cantidadDePasajeros())
+	}
+
+	test "velocidad maxima de la formacion" {
+		sanMartin.agregarLocomotora(locomotoraUno)
+		locomotoraUno.velocidadMaxima(15)
+		assert.equals(15, sanMartin.velocidadMaxima())
+	}
+
+	test "una formacion es eficiente" {
+		sanMartin.agregarLocomotora(locomotoraUno)
+		locomotoraUno.peso(100)
+		locomotoraUno.arrastreMaximo(1000)
+		assert.that(sanMartin.esEficiente())
+	}
+
+	test "una formacion no puede moverse" {
+		sarmiento.agregarLocomotora(locomotoraUno)
+		vagonCuatro.cargaMaxima(800)
+		locomotoraUno.arrastreMaximo(500)
+		sarmiento.agregarVagon(vagonCuatro)
+		assert.notThat(sarmiento.puedeMoverse())
+	}
+
+	test "le falta fuerza de arrastre a la locomotora" {
+		vagonCuatro.cargaMaxima(200)
+		vagonUno.ancho(2)
+		vagonUno.largo(3)
+		sarmiento.agregarLocomotora(locomotoraUno)
+		sarmiento.agregarVagon(vagonUno)
+		sarmiento.agregarVagon(vagonDos)
+		sarmiento.agregarVagon(vagonCuatro)
+		locomotoraUno.arrastreMaximo(1000)
+		assert.equals(1380, sarmiento.cuantosKilosDeArrastreLeFalta())
+	}
+
+	test "los vagones mas pesados de cada formacion" {
+		vagonCuatro.cargaMaxima(180)
+		vagonUno.ancho(2)
+		vagonUno.largo(5)
+		vagonDos.ancho(5)
+		vagonDos.largo(8)
+		vagonTres.ancho(3)
+		vagonTres.largo(5)
+		depositoUno.agregarFormacion(sarmiento)
+		depositoUno.agregarFormacion(sanMartin)
+		sanMartin.agregarVagon(vagonUno)
+		sanMartin.agregarVagon(vagonDos)
+		sarmiento.agregarVagon(vagonTres)
+		sarmiento.agregarVagon(vagonCuatro)
+		assert.equals([ vagonTres, vagonDos ], depositoUno.conjuntoDeVagonesPesados())
+	}
+
+	test"La formacion necesita un conductor experimentado" {
+		vagonUno.ancho(5)
+		vagonUno.largo(8)
+		vagonCuatro.cargaMaxima(3500)
+		sanMartin.agregarVagon(vagonUno)
+		sanMartin.agregarVagon(vagonCuatro)
+		sanMartin.agregarLocomotora(locomotoraUno)
+		depositoUno.agregarFormacion(sanMartin)
+		assert.that(depositoUno.conductorExperimentado())
+	}
+
+	test "ver si se necesita una locomotora extra" {
+		var locomotoraExtra = new Locomotora()
+		depositoUno.agregarLocomotoraSuelta(locomotoraExtra)
+		locomotoraExtra.arrastreMaximo(2500)
+		depositoUno.agregarLocomotoraSuelta(locomotoraExtra)
+		sarmiento.agregarLocomotora(locomotoraUno)
+		vagonCuatro.cargaMaxima(800)
+		locomotoraUno.arrastreMaximo(500)
+		sarmiento.agregarVagon(vagonCuatro)
+		depositoUno.agregarLocomotoraExtra(sarmiento)
+		assert.equals(2800, sarmiento.sumaArrastre())
+	}
+
+}
+
