@@ -1,4 +1,4 @@
-class Pasajero {
+class VagonDePasajero {
 
 	var property ancho = 0
 	var property largo = 0
@@ -13,10 +13,18 @@ class Pasajero {
 	method pesoMaximo() {
 		return self.cantidadDePasajeros() * 80
 	}
+	
+	method cantidadDeBanios(){
+		if (self.cantidadDePasajeros()< 50){
+			return 1
+		}else{
+			return self.cantidadDePasajeros()/50
+		}
+	}
 
 }
 
-class Carga {
+class VagonDeCarga {
 
 	var property cargaMaxima = 100
 
@@ -26,5 +34,8 @@ class Carga {
 
 	method cantidadDeBanios() = 0
 
-}
 
+method cantidadDePasajeros(){
+	return 0
+}
+}
