@@ -9,10 +9,11 @@ describe "objetos" {
 	var sanMartin = new Formacion()
 	var sarmiento = new Formacion()
 	var locomotoraUno = new Locomotora()
-	var vagonUno = new Pasajero()
-	var vagonDos = new Pasajero()
-	var vagonTres = new Pasajero()
-	var vagonCuatro = new Carga()
+	var locomotoraDos = new Locomotora()
+	var vagonUno = new VagonDePasajero()
+	var vagonDos = new VagonDePasajero()
+	var vagonTres = new VagonDePasajero()
+	var vagonCuatro = new VagonDeCarga()
 
 	test"la cantidad de pasajeros por vagon" {
 		vagonUno.ancho(5)
@@ -32,7 +33,7 @@ describe "objetos" {
 	test "velocidad maxima de la formacion" {
 		sanMartin.agregarLocomotora(locomotoraUno)
 		locomotoraUno.velocidadMaxima(15)
-		assert.equals(15, sanMartin.velocidadMaxima())
+		assert.equals(15, sanMartin.velocidadMaximaLocomotoras())
 	}
 
 	test "una formacion es eficiente" {
@@ -94,7 +95,6 @@ describe "objetos" {
 		var locomotoraExtra = new Locomotora()
 		depositoUno.agregarLocomotoraSuelta(locomotoraExtra)
 		locomotoraExtra.arrastreMaximo(2500)
-		depositoUno.agregarLocomotoraSuelta(locomotoraExtra)
 		sarmiento.agregarLocomotora(locomotoraUno)
 		vagonCuatro.cargaMaxima(800)
 		locomotoraUno.arrastreMaximo(500)
@@ -103,5 +103,100 @@ describe "objetos" {
 		assert.equals(2800, sarmiento.sumaArrastre())
 	}
 
-}
+	test "la formacion de corta distancia esta bien armada" {
+		var belgrano = new TrenCortaDistancia()
+		vagonUno.ancho(3)
+		vagonUno.largo(2)
+		vagonDos.ancho(3)
+		vagonDos.largo(2)
+		belgrano.agregarLocomotora(locomotoraUno)
+		belgrano.agregarVagon(vagonUno)
+		belgrano.agregarVagon(vagonDos)
+		locomotoraUno.arrastreMaximo(5000)
+		assert.that(belgrano.estaBienArmado())
+	}
 
+	test "la formacion de larga distancia esta bien armada" {
+		var belgrano = new TrenLargaDistancia()
+		vagonUno.ancho(5)
+		vagonUno.largo(5)
+		vagonDos.ancho(8)
+		vagonDos.largo(8)
+		belgrano.agregarLocomotora(locomotoraUno)
+		belgrano.agregarVagon(vagonUno)
+		belgrano.agregarVagon(vagonDos)
+		locomotoraUno.arrastreMaximo(15000)
+		assert.that(belgrano.estaBienArmado())
+	}
+
+	test "velocidad corta distancia" {
+		var belgrano = new TrenCortaDistancia()
+		vagonUno.ancho(3)
+		vagonUno.largo(2)
+		vagonDos.ancho(3)
+		vagonDos.largo(2)
+		belgrano.agregarLocomotora(locomotoraUno)
+		belgrano.agregarLocomotora(locomotoraDos)
+		belgrano.agregarVagon(vagonUno)
+		belgrano.agregarVagon(vagonDos)
+		locomotoraUno.arrastreMaximo(5000)
+		locomotoraUno.velocidadMaxima(60)
+		locomotoraDos.velocidadMaxima(80)
+		assert.equals(60, belgrano.velocidadMaxima())
+	}
+
+	test "velocida larga distancia entre dos ciudades grandes " {
+		var belgrano = new TrenLargaDistancia()
+		var buenosAires = new Ciudad()
+		var neuquen = new Ciudad()
+		vagonUno.ancho(5)
+		vagonUno.largo(5)
+		vagonDos.ancho(8)
+		vagonDos.largo(8)
+		belgrano.agregarLocomotora(locomotoraUno)
+		belgrano.agregarVagon(vagonUno)
+		belgrano.agregarVagon(vagonDos)
+		locomotoraUno.arrastreMaximo(15000)
+		locomotoraUno.velocidadMaxima(300)
+		belgrano.cambiarOrigen(buenosAires)
+		belgrano.cambiarDestino(neuquen)
+		buenosAires.esGrande(true)
+		neuquen.esGrande(true)
+		assert.equals(200, belgrano.velocidadMaxima())
+	}
+
+	test "velocida larga distancia entre dos ciudades chicas " {
+		var belgrano = new TrenLargaDistancia()
+		var buenosAires = new Ciudad()
+		var neuquen = new Ciudad()
+		vagonUno.ancho(5)
+		vagonUno.largo(5)
+		vagonDos.ancho(8)
+		vagonDos.largo(8)
+		belgrano.agregarLocomotora(locomotoraUno)
+		belgrano.agregarVagon(vagonUno)
+		belgrano.agregarVagon(vagonDos)
+		locomotoraUno.arrastreMaximo(15000)
+		locomotoraUno.velocidadMaxima(300)
+		belgrano.cambiarOrigen(buenosAires)
+		belgrano.cambiarDestino(neuquen)
+		assert.equals(150, belgrano.velocidadMaxima())
+	}
+
+	test "tren de alta velocidad esta bien armado" {
+		var tesla = new TrenesAltaVelocidad()
+		vagonUno.ancho(3)
+		vagonUno.largo(3)
+		vagonDos.ancho(2)
+		vagonDos.largo(2)
+		tesla.agregarLocomotora(locomotoraUno)
+		tesla.agregarLocomotora(locomotoraDos)
+		tesla.agregarVagon(vagonUno)
+		tesla.agregarVagon(vagonDos)
+		locomotoraUno.arrastreMaximo(15000)
+		locomotoraUno.velocidadMaxima(300)
+		locomotoraDos.velocidadMaxima(280)
+		assert.that(tesla.estaBienArmado())
+	}
+
+}
