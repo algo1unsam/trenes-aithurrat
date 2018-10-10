@@ -7,6 +7,9 @@ class Locomotora {
 	method arrastreUtil() {
 		return arrastreMaximo - peso
 	}
+	
+	method velocidadMaxima(nuevaVel){
+		velocidadMaxima=nuevaVel
+	}
 
 }
-
