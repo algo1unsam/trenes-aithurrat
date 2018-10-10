@@ -55,38 +55,20 @@ class Formacion {
 		return (locomotoras.size() + vagones.size()) > 20 or (self.sumaPesoMaximoLocomotoras() + self.sumaPesoMaximoVagones()) > 10000
 	}
 
+	method cantidadDePasajeros() {
+		return vagones.sum{ vagon => vagon.cantidadDePasajeros() }
+	}
+
 }
 
 class TrenCortaDistancia inherits Formacion {
 
 	method estaBienArmado() {
-		self.puedeMoverse() && not self.esCompleja()
+		return self.puedeMoverse() && not self.esCompleja()
 	}
-
-	method velocidadMaxima() {
-		// locomotoras.velocidadMaxima().min(60)
-		60
-	}
-
-}
-
-class TrenLargaDistancia inherits Formacion {
-
-	const origen = null
-	const destino = null
-
-	method estaBienArmado() {
-		self.puedeMoverse() && self.tieneSuficientesBanios()
-	}
-
-	method tieneSuficientesBanios() {
-		self.cantidadDeBanios() >= vagones.cantidadDePasajeros() / 50
-	}
-
-	method cantidadDeBanios() = vagones.sum{ vagon => vagon.cantidadDeBanios() }
 
 	method velocidadMaximaLegal() {
-		if (origen.esGrande() and destino.esGrande()) 200 else 150
+		return 60
 	}
 
 	method velocidadMaxima() {
@@ -95,9 +77,63 @@ class TrenLargaDistancia inherits Formacion {
 
 }
 
+class TrenLargaDistancia inherits Formacion {
+
+	var origen = null
+	var destino = null
+
+	method estaBienArmado() {
+		return self.puedeMoverse() && self.tieneSuficientesBanios()
+	}
+
+	method tieneSuficientesBanios() {
+		return self.cantidadDeBanios() >= self.cantidadDePasajeros() / 50
+	}
+
+	method cantidadDeBanios() {
+		return vagones.sum{ vagon => vagon.cantidadDeBanios() }
+	}
+
+	method velocidadMaximaLegal() {
+		if (origen.esGrande() && destino.esGrande()) {
+			return 200
+		} else {
+			return 150
+		}
+	}
+
+	method velocidadMaxima() {
+		return self.velocidadMaximaLocomotoras().min(self.velocidadMaximaLegal())
+	}
+
+	method cambiarOrigen(ciudad) {
+		origen = ciudad
+	}
+
+	method cambiarDestino(ciudad) {
+		destino = ciudad
+	}
+
+}
+
 class Ciudad {
 
-	const property esGrande = false
+	var property esGrande = false
+
+}
+
+class TrenesAltaVelocidad inherits Formacion {
+
+	method estaBienArmado() {
+		return  self.velocidadMaxima() >= 250 && vagones.all({ vagon => vagon.pesoMaximo() < 2500 })
+	}
+
+	method velocidadMaxima() {
+		return self.velocidadMaximaLocomotoras().min(self.velocidadMaximaLegal())
+	}
+	method velocidadMaximaLegal(){
+		return 400
+	}
 
 }
 
